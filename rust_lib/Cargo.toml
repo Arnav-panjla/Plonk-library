@@ -1,14 +1,28 @@
 [package]
-name = "ponk-lib"
+name = "plonk-lib"
 version = "0.1.0"
-edition = "2024"
+edition = "2021"
+authors = ["arnavpanjla@gmail.com"]
+description = "A library for implementing plonk"
 
 [dependencies]
-ark-ff = "0.4"
-ark-ec = "0.4"
-ark-poly = "0.4"
-ark-poly-commit = "0.4"
-ark-std = "0.4"
-ark-bls12-381 = "0.4" 
-rand = "0.8"
+ark-ff = "0.5"
+ark-ec = "0.5"
+ark-poly = "0.5"
+ark-poly-commit = "0.5"
+ark-std = "0.5"
+ark-bls12-381 = "0.5" 
 
+
+[lib]
+name = "plonk_lib"
+path = "./src/lib.rs"
+
+[features]
+default = ["std"]
+std = [
+    "ark-ff/std",
+    "ark-ec/std",
+    "ark-poly/std",
+    "ark-std/std",
+] 

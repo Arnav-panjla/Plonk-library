@@ -1,12 +1,19 @@
-use ark_ec::{pairing::Pairing, AffineRepr};
-use ark_ff::{Field, PrimeField, UniformRand};
-use ark_poly::{univariate::DensePolynomial, UVPolynomial};
+use ark_ec::{AdditiveGroup, PrimeGroup, AffineRepr, CurveGroup};
+use ark_ff::{PrimeField, Field};
+use ark_std::{Zero, One, UniformRand, ops::Mul};
+use ark_ec::pairing::Pairing;
 use ark_std::rand::Rng;
+use ark_bls12_381::{
+    Bls12_381,
+    G1Projective as G1, 
+    G2Projective as G2, 
+    Fr as ScalarField
+    };
 
 pub struct KZGParams<E: Pairing> {
-    pub powers_of_g: Vec<E::G1Affine>, 
-    pub g2: E::G2Affine,       
-    pub g2_s: E::G2Affine,       
+    pub powers_of_g: Vec<E::G1Affine>,
+    pub g2: E::G2Affine,
+    pub g2_s: E::G2Affine,
 }
 
 impl<E: Pairing> KZGParams<E> {
@@ -32,4 +39,42 @@ impl<E: Pairing> KZGParams<E> {
         }
     }
 }
+
+#[test]
+fn test_kgz_setup() {
+    let mut rng = ark_std::test_rng();
+    let params : KZGParams<Bls12_381> = KZGParams::setup(10, &mut rng);
+    assert_eq!(params.powers_of_g.len(), 11);
+    assert_eq!(params.g2, G2::generator().into_affine());
+}
+
+
+#[test]
+fn test_kgz_g2_relationship() {
+    let mut rng = ark_std::test_rng();
+    let params: KZGParams<Bls12_381> = KZGParams::setup(3, &mut rng);
+    
+    let g1_s = params.powers_of_g[1];
+    let g1_gen = params.powers_of_g[0];
+    
+    let pairing1 = Bls12_381::pairing(g1_s, params.g2);
+    let pairing2 = Bls12_381::pairing(g1_gen, params.g2_s);
+    assert_eq!(pairing1, pairing2);
+}
+
+#[test]
+fn test_kgz_edge_cases() {
+    let mut rng = ark_std::test_rng();
+    
+    // Test degree 0
+    let params: KZGParams<Bls12_381> = KZGParams::setup(0, &mut rng);
+    
+    assert_eq!(params.powers_of_g.len(), 1);
+    assert_eq!(params.powers_of_g[0], G1::generator().into_affine());
+    
+    // Test degree 1
+    let params: KZGParams<Bls12_381> = KZGParams::setup(1, &mut rng);
+    assert_eq!(params.powers_of_g.len(), 2);
+}
+
 
