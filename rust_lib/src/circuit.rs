@@ -2,23 +2,20 @@ use std::collections::HashMap;
 use std::ops::{Add, Mul};
 use ark_std::rand::Rng;
 
+// for testing purposes
 #[derive(Debug, Clone, Copy, PartialEq)]
 struct F(u64);
-
 impl F {
     pub fn zero() -> Self {
         F(0)
     }
-
     pub fn one() -> Self {
         F(1)
     }
-
     pub fn rand<R: Rng>(rng: &mut R) -> Self {
         F(rng.gen_range(0..=u64::MAX))
     }
 }
-
 impl Add for F {
     type Output = Self;
 
@@ -26,7 +23,6 @@ impl Add for F {
         F(self.0.wrapping_add(other.0))
     }
 }
-
 impl Mul for F {
     type Output = Self;
 
@@ -34,6 +30,7 @@ impl Mul for F {
         F(self.0.wrapping_mul(other.0))
     }
 }
+
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum GateType {
@@ -94,7 +91,7 @@ impl Circuit {
     /// Adds a new gate to the circuit
     pub fn add_gate(&mut self, gate: Gate) {
         let idx = self.gates.len();
-        
+
         if idx >= self.n {
             panic!("Circuit is full. Cannot add more than {} gates.", self.n);
         }
