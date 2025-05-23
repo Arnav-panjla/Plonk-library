@@ -105,7 +105,7 @@ mod tests {
         ]);
         
         let original_coeffs = coeffs.clone();
-        
+
         fft(&mut coeffs, omega);
         
         ifft(&mut coeffs, omega.inverse().unwrap());

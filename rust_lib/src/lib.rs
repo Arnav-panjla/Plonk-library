@@ -1,5 +1,7 @@
-mod kgz;
-pub use kgz::*;
+pub mod circuit;
+pub mod fft;
+pub mod kgz;
+pub mod prover;
+pub mod verifier;
 
-mod fft;
-pub use fft::*;
+
